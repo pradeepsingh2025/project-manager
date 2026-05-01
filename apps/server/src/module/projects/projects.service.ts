@@ -63,6 +63,21 @@ export async function createProjectTask(
   });
 }
 
+export async function getProjectMembers(projectId: string, userId: string, role: string) {
+  if (role !== "ADMIN") {
+    const access = await prisma.teamMember.findFirst({
+      where: { projectId, userId },
+    });
+    if (!access) throw Object.assign(new Error("Project not found or forbidden"), { status: 403 });
+  }
+  return prisma.teamMember.findMany({
+    where: { projectId },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+    },
+  });
+}
+
 export async function getProjects(userId: string, role: string) {
   if (role === "ADMIN") {
     return prisma.project.findMany();

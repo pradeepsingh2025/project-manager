@@ -11,6 +11,7 @@ router.use(verifyToken);
 router.get("/", projectsController.getProjectsHandler);
 router.get("/:id", projectsController.getProjectByIdHandler);
 router.get("/:id/tasks", projectsController.getProjectTasksHandler);
+router.get("/:id/members", projectsController.getProjectMembersHandler);
 
 // Project operations (ADMIN ONLY)
 router.post("/", requireAdmin, projectsController.createProjectHandler);

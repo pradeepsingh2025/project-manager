@@ -132,3 +132,12 @@ export async function getProjectTasksHandler(req: Request, res: Response, next: 
     next(err);
   }
 }
+
+export async function getProjectMembersHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const members = await projectsService.getProjectMembers(req.params.id as string, req.user!.id, req.user!.role);
+    return res.status(200).json(members);
+  } catch (err) {
+    next(err);
+  }
+}
