@@ -8,6 +8,7 @@ import { useProjectTasks, useUpdateTaskStatus, useDeleteTask, useAssignTask } fr
 import { useProjectMembers } from "@/lib/hooks/useTeam";
 import { KanbanBoard, KanbanBoardSkeleton } from "@/components/tasks/KanbanBoard";
 import { CreateTaskDialog } from "@/components/tasks/CreateTaskDialog";
+import { ManageTeamDialog } from "@/components/projects/ManageTeamDialog";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -138,6 +139,7 @@ export default function ProjectDetailPage() {
 
             {isAdmin && (
               <div className="flex items-center gap-2 shrink-0">
+                <ManageTeamDialog projectId={projectId} />
                 <CreateTaskDialog projectId={projectId} />
                 <Button
                   variant="outline"

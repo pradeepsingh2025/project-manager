@@ -3,6 +3,13 @@ export type Role = "USER" | "ADMIN";
 export type TaskStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED";
 
 // ─── Entities ─────────────────────────────────────────────────────────────────
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+}
+
 export interface Project {
   id: string;
   name: string;

@@ -2,7 +2,8 @@
 
 import { useAuthContext } from "@/app/providers";
 import { useProjects } from "@/lib/hooks/useProjects";
-import { useProjectTasks, useUpdateTaskStatus } from "@/lib/hooks/useTasks";
+import { useProjectTasks, useUpdateTaskStatus, useAssignTask } from "@/lib/hooks/useTasks";
+import { useProjectMembers } from "@/lib/hooks/useTeam";
 import { KanbanBoard, KanbanBoardSkeleton } from "@/components/tasks/KanbanBoard";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { Badge } from "@/components/ui/badge";
@@ -44,8 +45,15 @@ export default function TasksPage() {
   const { mutate: updateStatus, isPending: isStatusUpdating } =
     useUpdateTaskStatus(activeProjectId);
 
+  const { data: members = [] } = useProjectMembers(activeProjectId);
+  const { mutate: assignTask, isPending: isAssigning } = useAssignTask(activeProjectId);
+
   const handleStatusChange = (taskId: string, status: TaskStatus) => {
     updateStatus({ taskId, status });
+  };
+
+  const handleAssign = (taskId: string, userId: string | null) => {
+    assignTask({ taskId, assignedTo: userId });
   };
 
   return (
@@ -126,8 +134,11 @@ export default function TasksPage() {
             <KanbanBoard
               tasks={tasks}
               isAdmin={isAdmin}
+              members={members}
               onStatusChange={handleStatusChange}
+              onAssign={isAdmin ? handleAssign : undefined}
               isUpdating={isStatusUpdating}
+              isAssigning={isAssigning}
             />
           )}
         </div>
