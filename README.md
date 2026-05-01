@@ -1,159 +1,122 @@
-# Turborepo starter
+# Full-Stack Team Task Manager
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern, collaborative team task management application built with a monorepo architecture using Turborepo. This application features role-based access control (Admin/User), project management, Kanban-style task tracking, and team member management.
 
-## Using this example
+## 🚀 Tech Stack
 
-Run the following command:
+### Frontend (`apps/frontend`)
+- **Framework:** [Next.js](https://nextjs.org/) (App Router)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [shadcn/ui](https://ui.shadcn.com/)
+- **State Management:** [TanStack Query](https://tanstack.com/query/latest) (React Query)
+- **Authentication:** JWT with HttpOnly cookies (Silent Refresh)
 
-```sh
-npx create-turbo@latest
+### Backend (`apps/server`)
+- **Runtime:** [Node.js](https://nodejs.org/) & [Express](https://expressjs.com/)
+- **Database Access:** Shared database package
+- **Security:** Helmet, CORS, Cookie Parser, bcrypt for password hashing
+
+### Database (`packages/database`)
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Database:** PostgreSQL
+- **Schema:** Contains models for `User`, `Project`, `Task`, and `TeamMember` (Join table)
+
+---
+
+## 🛠️ Monorepo Structure
+
+This project uses [Turborepo](https://turbo.build/repo) to manage multiple applications and packages in a single repository.
+
+```text
+.
+├── apps
+│   ├── frontend    # Next.js web application
+│   └── server      # Express API server
+└── packages
+    ├── config-eslint   # Shared ESLint configurations
+    ├── config-typescript # Shared TypeScript configurations
+    └── database        # Prisma schema and generated client
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## ✨ Key Features
 
-### Apps and Packages
+- **Role-Based Access Control:** Distinct `ADMIN` and `USER` roles. Admins can create projects, manage teams, and assign tasks. Users can view their assigned projects, tasks, and update task statuses.
+- **Dynamic Dashboard:** Personalized dashboard showing relevant metrics (total projects, tasks, and completion rates) based on the user's role.
+- **Team Management:** Admins can easily add or remove users from projects.
+- **Kanban Task Board:** Interactive three-column task board (Pending, In Progress, Completed) with inline status updates and assignee management.
+- **Secure Authentication:** Stateless JWT architecture. Access tokens are stored in memory, while refresh tokens are securely stored in HttpOnly cookies to prevent XSS attacks.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## 🏃‍♂️ Getting Started
 
-### Utilities
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL Database
+- npm or pnpm
 
-This Turborepo has some additional tools already setup for you:
+### 1. Installation
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
+Clone the repository and install dependencies from the root:
 ```sh
-cd my-turborepo
-turbo build
+npm install
 ```
 
-Without global `turbo`, use your package manager:
+### 2. Environment Variables
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+Set up your `.env` files in the respective directories.
+
+**Root / `packages/database/.env`:**
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/project_manager?schema=public"
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+**`apps/server/.env`:**
+```env
+PORT=4000
+FRONTEND_URL="http://localhost:3000"
+JWT_SECRET="your-access-token-secret"
+JWT_REFRESH_SECRET="your-refresh-token-secret"
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+**`apps/frontend/.env.local`:**
+```env
+NEXT_PUBLIC_API_URL="http://localhost:4000"
 ```
 
-### Develop
+### 3. Database Setup
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
+Navigate to the database package to push the schema and generate the client:
 ```sh
-cd my-turborepo
-turbo dev
+cd packages/database
+npx prisma db push
+npx prisma generate
 ```
 
-Without global `turbo`, use your package manager:
-
+*(Optional)* You can use Prisma Studio to manually create an initial `ADMIN` user to explore the application:
 ```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+npx prisma studio
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 4. Running the Application
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
+Start all applications and packages simultaneously from the root of the monorepo using Turbo:
 ```sh
-turbo dev --filter=web
+npm run dev
 ```
 
-Without global `turbo`:
+- Frontend will be available at `http://localhost:3000`
+- Backend API will be available at `http://localhost:4000`
 
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
-```
+---
 
-### Remote Caching
+## 🔧 Scripts
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Useful commands that can be run from the root directory:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- `npm run dev`: Starts the development servers for all apps.
+- `npm run build`: Builds all apps and packages.
+- `npm run lint`: Lints all apps and packages.
+- `npm run db:push`: Pushes the Prisma schema to the database (runs inside the database package).
+- `npm run db:studio`: Opens Prisma Studio.
