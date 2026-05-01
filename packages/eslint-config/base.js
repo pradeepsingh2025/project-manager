@@ -11,8 +11,8 @@ import onlyWarn from "eslint-plugin-only-warn";
  * */
 export const config = [
   js.configs.recommended,
-  eslintConfigPrettier,
   ...tseslint.configs.recommended,
+  eslintConfigPrettier,
   {
     plugins: {
       turbo: turboPlugin,
@@ -24,6 +24,30 @@ export const config = [
   {
     plugins: {
       onlyWarn,
+    },
+  },
+  {
+    rules: {
+      // Industry-standard TS rules
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/consistent-type-imports": [
+        "warn",
+        { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      ],
+      "@typescript-eslint/no-import-type-side-effects": "warn",
+
+      // Core JS quality rules
+      "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+      eqeqeq: ["warn", "always", { null: "ignore" }],
+      "no-constant-binary-expression": "warn",
+      "prefer-const": "warn",
     },
   },
   {
