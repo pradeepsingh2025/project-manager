@@ -16,7 +16,7 @@ function processQueue(token: string | null) {
  * Silent refresh: calls /api/auth/refresh (refresh token is sent automatically
  * via the HttpOnly cookie), then updates the in-memory access token.
  */
-async function silentRefresh(): Promise<string | null> {
+export async function silentRefresh(): Promise<{ accessToken: string; user: any } | null> {
   const res = await fetch(`${API_BASE}/api/auth/refresh`, {
     method: "POST",
     credentials: "include", // sends HttpOnly cookie
@@ -27,9 +27,9 @@ async function silentRefresh(): Promise<string | null> {
     return null;
   }
 
-  const data: { accessToken: string } = await res.json();
+  const data: { accessToken: string; user: any } = await res.json();
   tokenStore.set(data.accessToken);
-  return data.accessToken;
+  return data;
 }
 
 /**
@@ -80,7 +80,8 @@ export async function apiFetch<T = unknown>(
     response = await doFetch(newToken);
   } else {
     isRefreshing = true;
-    const newToken = await silentRefresh();
+    const res = await silentRefresh();
+    const newToken = res?.accessToken ?? null;
     isRefreshing = false;
     processQueue(newToken);
 

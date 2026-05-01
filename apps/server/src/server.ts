@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { authRouter } from "@/module/auth/auth.routes.js";
+import projectsRouter from "@/module/projects/projects.routes.js";
+import tasksRouter from "@/module/tasks/tasks.routes.js";
+import dashboardRouter from "@/module/dashboard/dashboard.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 4000;
@@ -19,6 +22,9 @@ app.use(cookieParser());
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRouter);
+app.use("/api/projects", projectsRouter);
+app.use("/api/tasks", tasksRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 // ─── Health ──────────────────────────────────────────────────────────────────
 app.get("/health", (_req, res) => {

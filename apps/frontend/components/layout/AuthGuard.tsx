@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuthContext } from "@/app/providers";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthContext();
+  const { user, isInitializing } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
@@ -15,7 +15,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted || isInitializing) return;
 
     const isAuthPage = pathname?.startsWith("/auth");
 
@@ -24,10 +24,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     } else if (user && isAuthPage) {
       router.replace("/");
     }
-  }, [user, pathname, router, isMounted]);
+  }, [user, pathname, router, isMounted, isInitializing]);
 
   // Prevent hydration mismatch and hide content until mounted/checked
-  if (!isMounted) return null;
+  if (!isMounted || isInitializing) return null;
 
   // Don't render protected content if not authenticated (unless on auth pages)
   if (!user && !pathname?.startsWith("/auth")) {

@@ -97,10 +97,10 @@ export function refreshController(
       return;
     }
 
-    const tokens = authService.refreshTokens(token);
+    const { user, tokens } = authService.refreshTokens(token);
 
     setRefreshCookie(res, tokens.refreshToken);
-    res.status(200).json({ accessToken: tokens.accessToken });
+    res.status(200).json({ user, accessToken: tokens.accessToken });
   } catch (err: unknown) {
     next(err);
   }

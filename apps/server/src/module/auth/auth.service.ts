@@ -11,6 +11,7 @@ export interface TokenPair {
 interface JwtPayload {
   sub: string;
   email: string;
+  name: string;
   role: string;
 }
 
@@ -31,11 +32,13 @@ function signRefreshToken(payload: JwtPayload): string {
 function buildTokenPair(user: {
   id: string;
   email: string;
+  name: string;
   role: string;
 }): TokenPair {
   const payload: JwtPayload = {
     sub: user.id,
     email: user.email,
+    name: user.name,
     role: user.role,
   };
   return {
@@ -89,7 +92,7 @@ export async function login(
   return { user: { id: user.id, name: user.name, email: user.email, role: user.role }, tokens };
 }
 
-export function refreshTokens(refreshToken: string): TokenPair {
+export function refreshTokens(refreshToken: string): { user: { id: string; email: string; name: string; role: string }; tokens: TokenPair } {
   let payload: JwtPayload;
   try {
     payload = jwt.verify(refreshToken, REFRESH_SECRET) as JwtPayload;
@@ -99,11 +102,14 @@ export function refreshTokens(refreshToken: string): TokenPair {
     });
   }
 
-  // Stateless: trust the signed refresh token — no DB round-trip needed
-  return buildTokenPair({
+  const user = {
     id: payload.sub,
     email: payload.email,
+    name: payload.name,
     role: payload.role,
-  });
+  };
+
+  // Stateless: trust the signed refresh token — no DB round-trip needed
+  return { user, tokens: buildTokenPair(user) };
 }
 

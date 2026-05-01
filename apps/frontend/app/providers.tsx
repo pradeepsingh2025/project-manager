@@ -5,10 +5,12 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useEffect,
   type ReactNode,
 } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { tokenStore } from "@/lib/token";
+import { silentRefresh } from "@/lib/apiFetch";
 
 // ─── Auth context types ───────────────────────────────────────────────────────
 interface AuthUser {
@@ -20,6 +22,7 @@ interface AuthUser {
 
 interface AuthContextValue {
   user: AuthUser | null;
+  isInitializing: boolean;
   setSession: (user: AuthUser, accessToken: string) => void;
   clearSession: () => void;
 }
@@ -54,6 +57,23 @@ function getQueryClient() {
 export function Providers({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    silentRefresh()
+      .then((res) => {
+        if (mounted && res) {
+          setUser(res.user);
+        }
+      })
+      .finally(() => {
+        if (mounted) setIsInitializing(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const setSession = useCallback((u: AuthUser, accessToken: string) => {
     tokenStore.set(accessToken);
@@ -68,9 +88,10 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={{ user, setSession, clearSession }}>
+      <AuthContext.Provider value={{ user, isInitializing, setSession, clearSession }}>
         {children}
       </AuthContext.Provider>
     </QueryClientProvider>
   );
 }
+
