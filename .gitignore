@@ -4,6 +4,8 @@
 node_modules
 .pnp
 .pnp.js
+packages/database/generated
+packages/database/.env
 
 # Local env files
 .env
